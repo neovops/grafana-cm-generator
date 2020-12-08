@@ -19,7 +19,7 @@ def replace_datasource(content: str) -> str:
 @dataclass
 class GrafanaConfigmap:
     content: str
-    directory: Path
+    directory_name: str
     name: str
 
     def write(
@@ -36,7 +36,7 @@ class GrafanaConfigmap:
                 "name": f"{configmap_prefix}{self.name}",
                 "namespace": namespace,
                 "annotations": {
-                    "k8s-sidecar-target-directory": f"{target_prefix}{self.directory}"
+                    "k8s-sidecar-target-directory": f"{target_prefix}{self.directory_name}"
                 },
                 "labels": {"grafana_dashboard": "1"},
             },
@@ -51,7 +51,9 @@ def _generate_from_json(directory: Path) -> Iterator[GrafanaConfigmap]:
         name = f"{directory.name}-{f.stem}"
         with f.open("r") as fd:
             content = fd.read()
-        yield GrafanaConfigmap(name=name, directory=directory, content=content)
+        yield GrafanaConfigmap(
+            name=name, directory_name=directory.name, content=content
+        )
 
 
 def _generate_from_config(directory: Path) -> Iterator[GrafanaConfigmap]:
@@ -67,7 +69,7 @@ def _generate_from_config(directory: Path) -> Iterator[GrafanaConfigmap]:
         r.encoding = "utf8"
         yield GrafanaConfigmap(
             name=f"{directory.name}-{dashboard['name']}",
-            directory=directory,
+            directory_name=directory.name,
             content=json.dumps(r.json()),
         )
 
