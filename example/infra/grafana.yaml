@@ -1,0 +1,6 @@
+- name: nginx-ingress-controller
+  id: 9614
+  revision: 1
+- name: alertmanager
+  id: 9578
+  revision: 4
