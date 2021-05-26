@@ -66,6 +66,10 @@ Each dashboard must be in a specific directory. For raw json, just put file in t
 - name: alertmanager
   id: 9578
   revision: 4
+- name: loki-quick-search
+  id: 12019
+  revision: 2
+  datasource: Loki
 ```
 
 To generate and install ConfigMaps:

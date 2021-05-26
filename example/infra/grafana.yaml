@@ -4,3 +4,7 @@
 - name: alertmanager
   id: 9578
   revision: 4
+- name: loki-quick-search
+  id: 12019
+  revision: 2
+  datasource: Loki
