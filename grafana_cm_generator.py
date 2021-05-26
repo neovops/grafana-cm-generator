@@ -12,8 +12,8 @@ import requests
 import yaml
 
 
-def replace_datasource(content: str) -> str:
-    return re.sub(r'"datasource": *"\$[^,]*', '"datasource": "Prometheus"', content)
+def replace_datasource(content: str, datasource: str) -> str:
+    return re.sub(r'"datasource": *"\$[^,]*', f'"datasource": "{datasource}"', content)
 
 
 @dataclass
@@ -21,6 +21,7 @@ class GrafanaConfigmap:
     content: str
     directory_name: str
     name: str
+    datasource: str = "Prometheus"
 
     def write(
         self,
@@ -40,7 +41,9 @@ class GrafanaConfigmap:
                 },
                 "labels": {"grafana_dashboard": "1"},
             },
-            "data": {f"{self.name}.json": replace_datasource(self.content)},
+            "data": {
+                f"{self.name}.json": replace_datasource(self.content, self.datasource)
+            },
         }
         with (output_path / f"{self.name}.yaml").open("w") as fd:
             fd.write(yaml.dump(configmap))
@@ -71,6 +74,7 @@ def _generate_from_config(directory: Path) -> Iterator[GrafanaConfigmap]:
             name=f"{directory.name}-{dashboard['name']}",
             directory_name=directory.name,
             content=json.dumps(r.json()),
+            datasource=dashboard.get("datasource", "Prometheus"),
         )
 
 
